@@ -1,0 +1,31 @@
+pipeline{
+    agent any
+    stages{
+        stage('git checkout'){
+            steps{
+                echo "this is my git gub repo"
+                git branch: 'main', url: 'https://github.com/manojraut8695/django-notes-app.git'
+            }
+        }
+        stage('build docker images'){
+            steps{
+                echo "this is my images"
+                sh "docker build -t no-app ."
+            }
+        }
+        stage('docker login, tag & push to dockeer hub'){
+            steps{
+              withCredentials([usernamePassword(credentialsId:"dockerHub", passwordVariable:"dockerHubPass", usernameVariable:"dockerHubUser")]){
+                  sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPass}"
+                  sh "docker tag no-app ${env.dockerHubUser}/my-no-app:latest"
+                  sh "docker push ${env.dockerHubUser}/my-no-app:latest"
+              }  
+            }
+        }
+        stage('create con & deploy'){
+            steps{
+                sh "docker stack deploy -c docker-compose.yml django-app"
+            }
+        }
+    }
+}
