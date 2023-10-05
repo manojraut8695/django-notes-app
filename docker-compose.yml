@@ -1,6 +1,6 @@
 version : "3.3"
 services :
   web :
-     image : manojraut8695/my-no-app:latest
+     image : manojraut8695/note_a:latest
      ports :
-         - "8001:8000"
+         - "8002:8000"
